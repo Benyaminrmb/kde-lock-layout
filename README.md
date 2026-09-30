@@ -7,12 +7,10 @@ X11 sessions.
 
 ## Fedora RPM install
 
-Build the RPM from this source tree, install it, then enable the service for
-your user:
+Install the packaged release and enable the service for your user:
 
 ```sh
-./packaging/build-rpm.sh
-sudo dnf install ./dist/noarch/kde-lock-layout-*.rpm
+sudo dnf install https://github.com/Benyaminrmb/kde-lock-layout/releases/download/v1.0.0/kde-lock-layout-1.0.0-1.fc44.noarch.rpm
 systemctl --user enable --now kde-lock-layout.service
 ```
 
@@ -20,7 +18,7 @@ The service starts when the Plasma graphical session starts. It only affects
 the lock screen of the current logged-in session; SDDM's boot login screen has
 its own keyboard configuration.
 
-## Build the RPM
+## Build the RPM from source
 
 On Fedora, install the build tools and create the package:
 
