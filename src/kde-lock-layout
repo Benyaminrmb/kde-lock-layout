@@ -1,0 +1,41 @@
+#!/usr/bin/bash
+set -u
+
+find_qdbus() {
+    if command -v qdbus-qt6 >/dev/null 2>&1; then
+        command -v qdbus-qt6
+    elif command -v qdbus6 >/dev/null 2>&1; then
+        command -v qdbus6
+    elif [[ -x /usr/lib64/qt6/bin/qdbus-qt6 ]]; then
+        printf '%s\n' /usr/lib64/qt6/bin/qdbus-qt6
+    else
+        return 1
+    fi
+}
+
+QDBUS=$(find_qdbus) || {
+    echo 'kde-lock-layout: qdbus-qt6 not found; install qt6-qttools' >&2
+    exit 1
+}
+
+switch_to_english() {
+    local layouts index
+    layouts=$("$QDBUS" --literal org.kde.keyboard /Layouts \
+        org.kde.KeyboardLayouts.getLayoutsList 2>/dev/null) || return 0
+    index=$(printf '%s\n' "$layouts" |
+        grep -oP '\(sss\) "\K[^"]+' |
+        awk '$0 == "us" { print NR - 1; exit }')
+
+    if [[ -n "$index" ]]; then
+        "$QDBUS" org.kde.keyboard /Layouts \
+            org.kde.KeyboardLayouts.setLayout "$index" >/dev/null 2>&1 || true
+    fi
+}
+
+dbus-monitor --session \
+    "type='signal',interface='org.freedesktop.ScreenSaver',member='ActiveChanged'" |
+    while IFS= read -r line; do
+        case "$line" in
+            *'boolean true'*) switch_to_english ;;
+        esac
+    done
