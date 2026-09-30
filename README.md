@@ -1,5 +1,7 @@
 # KDE Lock Layout
 
+![KDE lock screen switching keyboard layout from Persian to English](assets/kde-lock-layout-banner.png)
+
 KDE Plasma 6 user service that switches the keyboard to English (US) when the
 screen locks. This is useful when Persian or another layout was active before
 locking. It works with Plasma's session D-Bus and is intended for Wayland or
